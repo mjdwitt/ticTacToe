@@ -38,7 +38,7 @@ data Board = Board (Map Loc Cell)
 
 instance Show Board where
   show board@(Board b) = "\n" ++ foldr row "" (L.map build range) ++ "\n"
-    where range = [0..(boardSize board)]
+    where range = [0..(sideLength board)]
           build x = getRow board x
           row cells []  = foldr (cell "|") "" cells
           row cells out =  foldr (cell "|") "" cells
@@ -89,7 +89,7 @@ getDiag (Board b) diag = cellsOnly . toList $ filterWithKey matchDiag b
 move :: Board -> Cell -> Loc -> (Maybe Board)
 
 move board@(Board b) player loc@(c,r)
-  | c < boardSize board && r < boardSize board =
+  | c < sideLength board && r < sideLength board =
     Just . Board $ M.insert loc player b
   | otherwise    = Nothing
 
@@ -106,7 +106,7 @@ cellsOnly pairs = L.map (\(_,c) -> c) pairs
 
 
 
--- | 'boardSize' returns the length of a side of the given @Board@.
-boardSize :: Board -> Int
+-- | 'sideLength' returns the length of a side of the given @Board@.
+sideLength :: Board -> Int
 
-boardSize (Board b) = floor . sqrt $ fromIntegral (size b - 1)
+sideLength (Board b) = floor . sqrt $ fromIntegral (size b - 1)
