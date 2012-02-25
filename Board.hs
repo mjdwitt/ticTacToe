@@ -38,8 +38,8 @@ data Board = Board (Map Loc Cell)
 
 instance Show Board where
   show board@(Board b) = "\n" ++ foldr row "" (L.map build range) ++ "\n"
-    where range = [0..((sqrt $ fromIntegral (size b)) - 1)]
-          build x = getRow board $ floor x
+    where range = [0..(boardSize board)]
+          build x = getRow board x
           row cells []  = foldr (cell "|") "" cells
           row cells out =  foldr (cell "|") "" cells
                         ++ "\n"
@@ -49,13 +49,17 @@ instance Show Board where
           cell _   c []  = show c
           cell div c out = show c ++ div ++ out
 
--- | makeBoard size creates a Board filled with empty cells. The Board will
--- be a square with sides as long as size.
+
+
+-- | 'makeBoard' @size@ creates a Board filled with empty cells. The Board
+-- will be a square with sides as long as @size@.
 makeBoard :: Int -> Board
 
 makeBoard size = Board . fromList $
   zip (snd $ mapAccumL f 0 [0..(size^2 - 1)]) (repeat Empty)
   where f acc x = (acc+1, (acc `div` size, acc `mod` size))
+
+
 
 -- | The following accessors return lists containing the cells in the
 -- specified row, column, or diagonal. Rows and columns start counting
@@ -79,16 +83,30 @@ getDiag (Board b) diag = cellsOnly . toList $ filterWithKey matchDiag b
   where matchDiag (c,r) _ | diag == 0 = c == r
                           | otherwise = c+r == 2
 
--- | cellsOnly takes a list of (Loc,Cell), such as what would be returned
+
+
+-- | 'move' @player loc@ inserts the @player@'s mark at @loc@.
+move :: Board -> Cell -> Loc -> (Maybe Board)
+
+move board@(Board b) player loc@(c,r)
+  | c < boardSize board && r < boardSize board =
+    Just . Board $ M.insert loc player b
+  | otherwise    = Nothing
+
+
+
+-- Internal functions
+
+-- | 'cellsOnly' takes a list of (Loc,Cell), such as what would be returned
 -- by running toList on a Board, and returns a list containing only the
 -- cells from the list.
 cellsOnly :: [(Loc,Cell)] -> [Cell]
 
 cellsOnly pairs = L.map (\(_,c) -> c) pairs
 
--- | move player loc inserts the player's mark at loc.
-move :: Board -> Cell -> Loc -> (Maybe Board)
 
-move (Board b) player loc@(c,r)
-  | c^2 < size b && r^2 < size b = Just . Board $ M.insert loc player b
-  | otherwise    = Nothing
+
+-- | 'boardSize' returns the length of a side of the given @Board@.
+boardSize :: Board -> Int
+
+boardSize (Board b) = floor . sqrt $ fromIntegral (size b - 1)
