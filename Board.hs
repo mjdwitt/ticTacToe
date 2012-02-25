@@ -18,12 +18,18 @@ import Data.List as L
 data Cell = X
           | O
           | Empty
+          | Div
             deriving(Eq)
 
 instance Show Cell where
   show X     = " X "
   show O     = " O "
   show Empty = "   "
+  show Div   = "---"
+
+
+
+type Loc = (Int,Int)
 
 
 
@@ -31,15 +37,17 @@ data Board = Board (Map Loc Cell)
              deriving(Eq)
 
 instance Show Board where
-  show (Board board) = foldr row "" board
-    where row :: [Cell] -> String -> String
-          row cells []  = foldr cell "" cells
-          row cells out = ((foldr cell "" cells)
-                          ++ "\n---+---+---\n")
-                          ++ out
-          cell :: Cell -> String -> String
-          cell c []  = show c
-          cell c out = ((show c) ++ "|") ++ out
+  show board@(Board b) = "\n" ++ foldr row "" (L.map build range) ++ "\n"
+    where range = [0..((sqrt $ fromIntegral (size b)) - 1)]
+          build x = getRow board $ floor x
+          row cells []  = foldr (cell "|") "" cells
+          row cells out =  foldr (cell "|") "" cells
+                        ++ "\n"
+                        ++ foldr (cell "+") "" (L.map (\_ -> Div) range)
+                        ++ "\n"
+                        ++ out
+          cell _   c []  = show c
+          cell div c out = show c ++ div ++ out
 
 -- | makeBoard size creates a Board filled with empty cells. The Board will
 -- be a square with sides as long as size.
