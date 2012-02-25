@@ -1,4 +1,17 @@
-module Board where
+module Board 
+  ( Cell (X, O)
+  , Loc
+  , Board ()
+  , makeBoard
+  , getRow
+  , getCol
+  , getDiag
+  , move
+  ) where
+
+import Data.Map as M
+
+import Data.List as L
 
 
 
