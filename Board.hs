@@ -92,7 +92,16 @@ getDiag (Board b) diag = cellsOnly . toList $ filterWithKey matchDiag b
 
 listRows :: Board -> [[Cell]]
 
-listRows board = L.map (getRow board) $ range board
+listRows board = generalList (getRow board) board
+
+listCols :: Board -> [[Cell]]
+
+listCols board = generalList (getCol board) board
+
+listDiags :: Board -> [[Cell]]
+
+-- total hack-job
+listDiags board = take 2 $ generalList (getDiag board) board
 
 
 
@@ -127,3 +136,12 @@ sideLength (Board b) = floor . sqrt $ fromIntegral (size b)
 -- | 'range' returns a list of whole numbers from zero to the length of the
 -- given @Board@.
 range board = [0..(sideLength board - 1)]
+
+
+
+-- | 'generalList' is a generalization used by all the batch accessors. It
+-- uses @get@ to return the 2D list of each group of Cells accessible by
+-- @get@.
+generalList :: (Int -> [Cell]) -> Board -> [[Cell]]
+
+generalList get board = L.map get $ range board
