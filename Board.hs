@@ -37,13 +37,15 @@ data Board = Board (Map Loc Cell)
              deriving(Eq)
 
 instance Show Board where
-  show board@(Board b) = "\n" ++ foldr row "" (L.map build range) ++ "\n"
-    where range = [0..(sideLength board)]
-          build x = getRow board x
+  show board@(Board b) =  "\n"
+                       ++ foldr row "" (L.map build $ range board)
+                       ++ "\n"
+    where build x = getRow board x
           row cells []  = foldr (cell "|") "" cells
           row cells out =  foldr (cell "|") "" cells
                         ++ "\n"
-                        ++ foldr (cell "+") "" (L.map (\_ -> Div) range)
+                        ++ foldr (cell "+") "" (L.map (\_ -> Div) $
+                                                  range board)
                         ++ "\n"
                         ++ out
           cell _   c []  = show c
@@ -85,6 +87,15 @@ getDiag (Board b) diag = cellsOnly . toList $ filterWithKey matchDiag b
 
 
 
+-- | These accessors use the above to return lists of rows, columns, and
+-- diagonals.
+
+listRows :: Board -> [[Cell]]
+
+listRows board = L.map (getRow board) $ range board
+
+
+
 -- | 'move' @player loc@ inserts the @player@'s mark at @loc@.
 move :: Board -> Cell -> Loc -> (Maybe Board)
 
@@ -109,4 +120,10 @@ cellsOnly pairs = L.map (\(_,c) -> c) pairs
 -- | 'sideLength' returns the length of a side of the given @Board@.
 sideLength :: Board -> Int
 
-sideLength (Board b) = floor . sqrt $ fromIntegral (size b - 1)
+sideLength (Board b) = floor . sqrt $ fromIntegral (size b)
+
+
+
+-- | 'range' returns a list of whole numbers from zero to the length of the
+-- given @Board@.
+range board = [0..(sideLength board - 1)]
