@@ -3,6 +3,7 @@ module Board
   , Loc
   , Board ()
   , makeBoard
+  , getCell
   , getRow
   , getCol
   , getDiag
