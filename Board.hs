@@ -13,6 +13,7 @@ module Board
   , unsafeRow
   , unsafeCol
   , unsafeDiag
+  , sideLength
   , move
   ) where
 
@@ -137,7 +138,14 @@ listCols board = generalList (unsafeCol board) board
 listDiags :: Board -> [[Cell]]
 
 -- total hack-job
-listDiags board = take 2 $ generalList (unsafeDiag board) board
+listDiags board = take 2 $ generalList (uns
+
+
+
+-- | 'sideLength' returns the length of a side of the given @Board@.
+sideLength :: Board -> Int
+
+sideLength (Board b) = floor . sqrt $ fromIntegral (size b)afeDiag board) board
 
 
 
@@ -159,13 +167,6 @@ move board@(Board b) player loc@(c,r)
 cellsOnly :: [(Loc,Cell)] -> [Cell]
 
 cellsOnly pairs = L.map (\(_,c) -> c) pairs
-
-
-
--- | 'sideLength' returns the length of a side of the given @Board@.
-sideLength :: Board -> Int
-
-sideLength (Board b) = floor . sqrt $ fromIntegral (size b)
 
 
 
