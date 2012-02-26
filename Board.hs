@@ -7,6 +7,12 @@ module Board
   , getRow
   , getCol
   , getDiag
+  , listRows
+  , listCols
+  , listDiags
+  , unsafeRow
+  , unsafeCol
+  , unsafeDiag
   , move
   ) where
 
@@ -41,7 +47,7 @@ instance Show Board where
   show board@(Board b) =  "\n"
                        ++ foldr row "" (L.map build $ range board)
                        ++ "\n"
-    where build x = getRow board x
+    where build x = unsafeRow board x
           row cells []  = foldr (cell "|") "" cells
           row cells out =  foldr (cell "|") "" cells
                         ++ "\n"
@@ -79,21 +85,41 @@ getCell (Board b) loc = loc `M.lookup` b
 -- The returned list will be the same length as the number provided to
 -- makeBoard.
 
-getRow :: Board -> Int -> [Cell]
+unsafeRow :: Board -> Int -> [Cell]
 
-getRow (Board b) row = cellsOnly . toList $ filterWithKey matchRow b
+unsafeRow (Board b) row = cellsOnly . toList $ filterWithKey matchRow b
   where matchRow (_,r) _ = row == r
 
-getCol :: Board -> Int -> [Cell]
+unsafeCol :: Board -> Int -> [Cell]
 
-getCol (Board b) col = cellsOnly . toList $ filterWithKey matchCol b
+unsafeCol (Board b) col = cellsOnly . toList $ filterWithKey matchCol b
   where matchCol (c,_) _ = col == c
 
-getDiag :: Board -> Int -> [Cell]
+unsafeDiag :: Board -> Int -> [Cell]
 
-getDiag bd@(Board b) diag = cellsOnly . toList $ filterWithKey matchDiag b
+unsafeDiag bd@(Board b) diag = cellsOnly . toList $
+  filterWithKey matchDiag b
   where matchDiag (c,r) _ | diag == 0 = c == r
                           | otherwise = c+r == sideLength bd - 1
+
+
+
+-- | Some safe versions of the above. Really just wrapper functions.
+
+getRow :: Board -> Int -> Maybe [Cell]
+
+getRow board row | row `outOfBounds` board = Nothing
+                 | otherwise               = Just $ unsafeRow board row
+
+getCol :: Board -> Int -> Maybe [Cell]
+
+getCol board col | col `outOfBounds` board = Nothing
+                 | otherwise               = Just $ unsafeCol board col
+
+getDiag :: Board -> Int -> Maybe [Cell]
+
+getDiag board diag | diag < 0 || diag > 1  = Nothing
+                   | otherwise             = Just $ unsafeDiag board diag
 
 
 
@@ -102,16 +128,16 @@ getDiag bd@(Board b) diag = cellsOnly . toList $ filterWithKey matchDiag b
 
 listRows :: Board -> [[Cell]]
 
-listRows board = generalList (getRow board) board
+listRows board = generalList (unsafeRow board) board
 
 listCols :: Board -> [[Cell]]
 
-listCols board = generalList (getCol board) board
+listCols board = generalList (unsafeCol board) board
 
 listDiags :: Board -> [[Cell]]
 
 -- total hack-job
-listDiags board = take 2 $ generalList (getDiag board) board
+listDiags board = take 2 $ generalList (unsafeDiag board) board
 
 
 
@@ -146,6 +172,15 @@ sideLength (Board b) = floor . sqrt $ fromIntegral (size b)
 -- | 'range' returns a list of whole numbers from zero to the length of the
 -- given @Board@.
 range board = [0..(sideLength board - 1)]
+
+
+
+-- | 'outOfBounds' @n board@ checks to see if the value @n@ fits within the
+-- dimensions of the @board@. That is, 'outOfBounds' returns @False@ iff
+-- @n < sideLength board@.
+outOfBounds :: Int -> Board -> Bool
+
+outOfBounds n board = n >= sideLength board
 
 
 
