@@ -81,9 +81,9 @@ getCol (Board b) col = cellsOnly . toList $ filterWithKey matchCol b
 
 getDiag :: Board -> Int -> [Cell]
 
-getDiag (Board b) diag = cellsOnly . toList $ filterWithKey matchDiag b
+getDiag bd@(Board b) diag = cellsOnly . toList $ filterWithKey matchDiag b
   where matchDiag (c,r) _ | diag == 0 = c == r
-                          | otherwise = c+r == 2
+                          | otherwise = c+r == sideLength bd - 1
 
 
 
