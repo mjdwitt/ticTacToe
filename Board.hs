@@ -63,6 +63,15 @@ makeBoard size = Board . fromList $
 
 
 
+-- | 'getCell' @board loc@ returns the value of the cell at @loc@ on
+-- @board@, wrapped in @Just@. If @loc@ is invalid (i.e. not on the
+-- @board@) it returns @Nothing@.
+getCell :: Board -> Loc -> Maybe Cell
+
+getCell (Board b) loc = loc `M.lookup` b
+
+
+
 -- | The following accessors return lists containing the cells in the
 -- specified row, column, or diagonal. Rows and columns start counting
 -- from zero and there are only two returnable diagonals: zero and one.
