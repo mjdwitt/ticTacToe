@@ -108,17 +108,14 @@ unsafeDiag bd@(Board b) diag = cellsOnly . toList $
 -- | Some safe versions of the above. Really just wrapper functions.
 
 getRow :: Board -> Int -> Maybe [Cell]
-
 getRow board row | row `outOfBounds` board = Nothing
                  | otherwise               = Just $ unsafeRow board row
 
 getCol :: Board -> Int -> Maybe [Cell]
-
 getCol board col | col `outOfBounds` board = Nothing
                  | otherwise               = Just $ unsafeCol board col
 
 getDiag :: Board -> Int -> Maybe [Cell]
-
 getDiag board diag | diag < 0 || diag > 1  = Nothing
                    | otherwise             = Just $ unsafeDiag board diag
 
@@ -128,24 +125,22 @@ getDiag board diag | diag < 0 || diag > 1  = Nothing
 -- diagonals.
 
 listRows :: Board -> [[Cell]]
-
 listRows board = generalList (unsafeRow board) board
 
 listCols :: Board -> [[Cell]]
-
 listCols board = generalList (unsafeCol board) board
 
 listDiags :: Board -> [[Cell]]
-
--- total hack-job
-listDiags board = take 2 $ generalList (uns
+listDiags board = unsafeDiag board 0 : (unsafeDiag board 1 : [])
 
 
 
 -- | 'sideLength' returns the length of a side of the given @Board@.
 sideLength :: Board -> Int
 
-sideLength (Board b) = floor . sqrt $ fromIntegral (size b)afeDiag board) board
+sideLength (Board b) = floor
+                     . sqrt
+                     $ fromIntegral (size b)
 
 
 
