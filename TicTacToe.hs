@@ -14,7 +14,6 @@ module TicTacToe
   , unsafeRow
   , unsafeCol
   , unsafeDiag
-  , sideLength
   , move
   , winner
   ) where
@@ -86,8 +85,8 @@ data EndGame = Winner Player
 -- @Draw@ is returned. Otherwise, @NotDone@ is returned.
 winner :: Board -> EndGame
 
-winner board | [X,X,X] `elem` rowsColsAndDiags = Winner X
-             | [O,O,O] `elem` rowsColsAndDiags = Winner O
+winner board | any (all (X ==)) rowsColsAndDiags = Winner X
+             | any (all (O ==)) rowsColsAndDiags = Winner O
              | hasEmpties rowsColsAndDiags     = NotDone
              | otherwise                       = Draw
   where rowsColsAndDiags = listRows board
@@ -96,13 +95,20 @@ winner board | [X,X,X] `elem` rowsColsAndDiags = Winner X
         hasEmpties = any (Empty `elem`)
 
 
+------------------------------------------
+-- Board accessors and modifiers
+------------------------------------------
+
+
 
 -- | 'move' @player loc@ inserts the @player@'s mark at @loc@.
 move :: Board -> Player -> Loc -> (Maybe Board)
 
 move board@(Board b) player loc@(c,r)
-  | c < sideLength board && r < sideLength board =
-    Just . Board $ M.insert loc player b
+  | c < sideLength board
+    && r < sideLength board
+    && getPlayer board loc == Just Empty
+    = Just . Board $ M.insert loc player b
   | otherwise    = Nothing
 
 
@@ -116,7 +122,8 @@ getPlayer (Board b) loc = loc `M.lookup` b
 
 
 
--- | Some safe versions of the above. Really just wrapper functions.
+-- | Some safe accessors which return an entire row, column, or diagonal
+-- as a list.
 
 getRow :: Board -> Int -> Maybe [Player]
 getRow board row | row `outOfBounds` board = Nothing
@@ -132,8 +139,8 @@ getDiag board diag | diag < 0 || diag > 1  = Nothing
 
 
 
--- | These accessors use the above to return lists of rows, columns, and
--- diagonals.
+-- | These accessors use the unsafe accessors to return lists of rows,
+-- columns, and diagonals.
 
 listRows :: Board -> [[Player]]
 listRows board = generalList (unsafeRow board) board
@@ -168,6 +175,12 @@ unsafeDiag bd@(Board b) diag = cellsOnly . toList $
 
 
 
+------------------------------------------
+-- Internal functions
+------------------------------------------
+
+
+
 -- | 'sideLength' returns the length of a side of the given @Board@.
 sideLength :: Board -> Int
 
@@ -176,8 +189,6 @@ sideLength (Board b) = floor
                      $ fromIntegral (size b)
 
 
-
--- Internal functions
 
 -- | 'cellsOnly' takes a list of (Loc,Player), such as what would be
 -- returned by running toList on a Board, and returns a list containing only
