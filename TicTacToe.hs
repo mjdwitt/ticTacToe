@@ -50,12 +50,12 @@ instance Show Board where
                        ++ foldr row "" (L.map build $ range board)
                        ++ "\n"
     where build x = unsafeRow board x
-          row cells []   = foldr (cell " | ") "" cells
-          row cells out  = foldr (cell " | ") "" cells
-                        ++ "\n"
+          row cells []   = " " ++ foldr (cell " | ") "" cells ++ " "
+          row cells out  = " " ++ foldr (cell " | ") "" cells ++ " "
+                        ++ "\n-"
                         ++ foldr (cell "-+-") "" (L.map (\_ -> Div) $
-                                                range board)
-                        ++ "\n"
+                                                  range board)
+                        ++ "-\n"
                         ++ out
           cell _   c []  = show c
           cell div c out = show c ++ div ++ out

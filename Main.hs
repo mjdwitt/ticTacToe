@@ -31,9 +31,9 @@ play p b = do
 turn :: Player -> Board -> IO()
 turn p b = do
            putStrLn "Where would you like to go?"
-           putStr "Select a column: "
+           putStrLn "Select a column: "
            col <- getLine
-           putStr "Select a row: "
+           putStrLn "Select a row: "
            row <- getLine
            case move b p (read col, read row) of
              Just new -> play (nextPlayer p) new
