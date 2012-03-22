@@ -1,4 +1,4 @@
-module CLI where
+module Main where
 
 
 
