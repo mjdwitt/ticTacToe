@@ -16,7 +16,7 @@ Synopsis:            Simple tic tac toe game library with a cli front-end.
 -- Description:         
 
 -- The license under which the package is released.
-License:             BSD3
+License:             WTFPL
 
 -- The file containing the license text.
 License-file:        LICENSE
