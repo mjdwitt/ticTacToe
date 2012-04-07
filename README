@@ -1,0 +1,5 @@
+ticTacToe is a simple Haskell API for playing tic tac toe. The package
+currently includes a CLI front-end example and it aims to provide a web
+base front-end example in the future as well.
+
+The API is found in TicTacToe.hs and the CLI front-end is in CLI.hs.
