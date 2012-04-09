@@ -24,6 +24,12 @@ import Data.List as L (map, mapAccumL)
 
 
 
+------------------------------------------
+-- Types and instances
+------------------------------------------
+
+
+
 data Player = X
             | O
             | Empty
@@ -93,6 +99,7 @@ winner board | any (all (X ==)) rowsColsAndDiags = Winner X
                         ++ listCols board
                         ++ listDiags board
         hasEmpties = any (Empty `elem`)
+
 
 
 ------------------------------------------
