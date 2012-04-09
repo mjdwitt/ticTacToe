@@ -2,9 +2,9 @@ module AI
   ( takeTurn
   ) where
 
-  import TicTacToe
+import TicTacToe
 
 
 
-  takeTurn :: Board -> Board
-  takeTurn board = undefined
+takeTurn :: Board -> Board
+takeTurn board = undefined
